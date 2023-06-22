@@ -1,19 +1,23 @@
 import { open, writeFile } from "fs/promises";
-// import { open, close, write } from "fs";
+import fs from "fs";
 
-const path = "./files/fresh.txt";
-const innerText = "I am fresh and young";
-const errorMessage = "FS operation failed";
+import { getDirname } from "../helpers/utils.mjs";
+import { EEXIST, ERROR_MESSAGE } from "../helpers/constants.mjs";
 
-const create = async () => {
+const dirname = getDirname(import.meta.url);
+const path = `${dirname}/files/fresh.txt`;
+const text = "I am fresh and young";
+
+//! Async implementation
+const create = async (filePath, innerText) => {
   let fileHandle;
 
   try {
-    fileHandle = await open(path, "wx");
+    fileHandle = await open(filePath, "wx");
     await writeFile(fileHandle, innerText);
   } catch (err) {
-    if (err.code === "EEXIST") {
-      throw new Error(errorMessage);
+    if (err.code === EEXIST) {
+      throw new Error(ERROR_MESSAGE);
     }
 
     throw err;
@@ -22,31 +26,30 @@ const create = async () => {
   }
 };
 
-await create();
-
 //! Callback implementation
-// const create = () => {
-//   open(path, "wx", (err, fd) => {
-//     if (err) {
-//       if (err.code === "EEXIST") {
-//         throw new Error(errorMessage);
-//       }
+const createCb = (filePath, innerText) => {
+  fs.open(filePath, "wx", (err, fd) => {
+    if (err) {
+      if (err.code === EEXIST) {
+        throw new Error(ERROR_MESSAGE);
+      }
 
-//       throw err;
-//     }
+      throw err;
+    }
 
-//     try {
-//       write(fd, innerText, (err) => {
-//         if (err) {
-//           throw err;
-//         }
-//       });
-//     } finally {
-//       close(fd, (err) => {
-//         if (err) throw err;
-//       });
-//     }
-//   });
-// };
+    try {
+      fs.write(fd, innerText, (err) => {
+        if (err) {
+          throw err;
+        }
+      });
+    } finally {
+      fs.close(fd, (err) => {
+        if (err) throw err;
+      });
+    }
+  });
+};
 
-// create();
+await create(path, text);
+// createCb(path, text);
