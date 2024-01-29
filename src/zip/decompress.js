@@ -1,7 +1,7 @@
 import { createGunzip } from "node:zlib";
 import { pipeline } from "node:stream";
 import { createReadStream, createWriteStream } from "node:fs";
-import { getDirname, removeFile } from "../helpers/utils.mjs";
+import { getDirname } from "../helpers/utils.mjs";
 import { promisify } from "node:util";
 
 const pipe = promisify(pipeline);
@@ -18,12 +18,13 @@ const decompress = async () => {
 
   try {
     await pipe(source, gunzip, destination);
-    await removeFile(archive);
   } catch (err) {
     if (!err) return;
 
     console.error("An error occurred:", err);
     process.exitCode = 1;
+  } finally {
+    console.log("Archive was unziped.");
   }
 };
 
