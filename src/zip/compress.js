@@ -19,13 +19,12 @@ const compress = async () => {
 
   try {
     await pipe(source, gzip, destination);
+    console.log("Archive was created.");
   } catch (err) {
     if (!err) return;
 
     console.error("An error occurred:", err);
     process.exitCode = 1;
-  } finally {
-    console.log("Archive was created.");
   }
 };
 

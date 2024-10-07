@@ -18,13 +18,12 @@ const decompress = async () => {
 
   try {
     await pipe(source, gunzip, destination);
+    console.log("Archive was unziped.");
   } catch (err) {
     if (!err) return;
 
     console.error("An error occurred:", err);
     process.exitCode = 1;
-  } finally {
-    console.log("Archive was unziped.");
   }
 };
 
