@@ -1,11 +1,11 @@
+import { dirname } from "path";
+import { fileURLToPath } from "url";
 import { rm } from "fs/promises";
-import { getDirname } from "../helpers/utils.mjs";
 import { ENOENT, ERROR_MESSAGE } from "../helpers/constants.mjs";
 
-const dirname = getDirname(import.meta.url);
-const filePath = `${dirname}/files/fileToRemove.txt`;
-
-const remove = async (path) => {
+export const getFilename = (url) => fileURLToPath(url);
+export const getDirname = (url) => dirname(getFilename(url));
+export const removeFile = async (path) => {
   try {
     await rm(path);
   } catch (err) {
@@ -15,5 +15,3 @@ const remove = async (path) => {
     throw err;
   }
 };
-
-await remove(filePath);
